@@ -1,6 +1,7 @@
 # MoodleApp - Flutter
 Aplicação desenvolvida utilizando o Flutter para o framework Moodle.
 O objetivo dessa aplicação é possíbilitar o aluno acessar as disciplina e o seu conteúdo, permitindo visualizar e responder os quiz.
+
 Versão
 * Flutter 1.20.2 • channel stable • https://github.com/flutter/flutter.git
 * Dart 2.9.1

@@ -1,9 +1,10 @@
 import 'package:http/http.dart' as http;
+import 'package:moodleapp/database/Dados_dao.dart';
 import 'package:moodleapp/entitys/course.dart';
+import 'package:moodleapp/entitys/dados.dart';
 import 'package:moodleapp/entitys/disciplina.dart';
-import 'package:moodleapp/pages/diciplina_page.dart';
+import 'package:moodleapp/utils/shared_var.dart';
 import 'dart:convert' as convert;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ConsultaApi {
   static var url_login = 'https://appinfor.com.br/tecnico/login/token.php';
@@ -21,19 +22,13 @@ class ConsultaApi {
       var jsonResponse = convert.jsonDecode(response.body);
       if (jsonResponse['token'] != null) {
         var token = jsonResponse['token'];
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("tokenAluno", token);
+        await SharedVar.setToken(token);
         return 1;
       }
       return 2;
     } else {
       return 0;
     }
-  }
-
-  static Future<String> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('tokenAluno') ?? "";
   }
 
   static Future<List<Course>> getCursosMatriculados(String token) async {
@@ -56,20 +51,60 @@ class ConsultaApi {
     }
   }
 
-  static Future<List<Disciplina>> getDisciplina(String token, int id) async {
+  static Future<List<Disciplina>> getDisciplina(
+      String token, int idDisciplina) async {
     Map params = {
       'wstoken': token,
       'moodlewsrestformat': "json",
       'wsfunction': 'core_course_get_contents',
-      "courseid": id.toString()
+      "courseid": idDisciplina.toString()
     };
-    var response = await http.post(url_webservice, body: params);
-    if (response.statusCode == 200) {
+    var response;
+    try {
+      response = await http.post(url_webservice, body: params);
+    } catch (_) {
+      response = null;
+    }
+    if (response != null && response.statusCode == 200) {
       var jsonResponse = convert.jsonDecode(response.body);
       var rest = jsonResponse as List;
       List<Disciplina> list =
           rest.map<Disciplina>((json) => Disciplina.fromJson(json)).toList();
+      await atualizarDados(idDisciplina, response);
       return list;
+    } else {
+      Dados dado = await getDado(idDisciplina);
+      if (dado != null) {
+        var decode = convert.jsonDecode(dado.json);
+        var rest = convert.jsonDecode(decode) as List;
+        List<Disciplina> list =
+            rest.map<Disciplina>((json) => Disciplina.fromJson(json)).toList();
+        return list;
+      }
+      return null;
+    }
+  }
+
+  static Future<void> atualizarDados(int idDisciplina, var response) async {
+    Dados dado = await getDado(idDisciplina);
+    if (dado == null) {
+      Dados dado = Dados(
+          json: convert.jsonEncode(response.body).toString(),
+          tipo: "disciplina" + idDisciplina.toString());
+      DadosDAO().save(dado);
+    } else {
+      dado.json = convert.jsonEncode(response.body).toString();
+      DadosDAO().update(dado);
+    }
+  }
+
+  static Future<Dados> getDado(int iddisciplina) async {
+    print("id:" + iddisciplina.toString());
+    List<Dados> dados =
+        await DadosDAO().findAllByTipo("disciplina" + iddisciplina.toString());
+
+    if (dados.length > 0) {
+      return dados[0];
     } else {
       return null;
     }

@@ -3,6 +3,7 @@ import 'package:moodleapp/entitys/course.dart';
 import 'package:moodleapp/pages/diciplina_page.dart';
 import 'package:moodleapp/utils/consulta_api.dart';
 import 'package:moodleapp/utils/nav.dart';
+import 'package:moodleapp/utils/shared_var.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getAllCourses() async {
-    String token = await ConsultaApi.getToken();
+    String token = await SharedVar.getToken();
     List<Course> list = await ConsultaApi.getCursosMatriculados(token);
 
     setState(() {

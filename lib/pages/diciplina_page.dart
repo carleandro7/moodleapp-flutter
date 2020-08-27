@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:moodleapp/entitys/disciplina.dart';
 import 'package:moodleapp/utils/consulta_api.dart';
+import 'package:moodleapp/utils/shared_var.dart';
 
 class DisciplinaPage extends StatefulWidget {
   int id = -1;
@@ -25,7 +26,7 @@ class _DisciplinaPageState extends State<DisciplinaPage> {
   }
 
   void _getAllCourses() async {
-    String token = await ConsultaApi.getToken();
+    String token = await SharedVar.getToken();
     List<Disciplina> list = await ConsultaApi.getDisciplina(token, id);
 
     setState(() {

@@ -4,6 +4,7 @@ import 'Dart:async';
 import 'package:moodleapp/pages/login_page.dart';
 import 'package:moodleapp/utils/consulta_api.dart';
 import 'package:moodleapp/utils/nav.dart';
+import 'package:moodleapp/utils/shared_var.dart';
 
 class SpashPage extends StatefulWidget {
   @override
@@ -30,7 +31,7 @@ class _SpashPage extends State<SpashPage> with SingleTickerProviderStateMixin {
   }
 
   verificarTipoTela() async {
-    String token = await ConsultaApi.getToken();
+    String token = await SharedVar.getToken();
     if (token == "") {
       startTimeoutLogin();
     } else {

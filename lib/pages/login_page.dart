@@ -3,6 +3,7 @@ import 'package:moodleapp/pages/home_page.dart';
 import 'package:moodleapp/utils/Messages.dart';
 import 'package:moodleapp/utils/consulta_api.dart';
 import 'package:moodleapp/utils/nav.dart';
+import 'package:moodleapp/utils/shared_var.dart';
 
 class LoginPage extends StatelessWidget {
   final textUsername = TextEditingController();
@@ -74,7 +75,7 @@ class LoginPage extends StatelessWidget {
   }
 
   void _verificarUsuario(context) async {
-    String token = await ConsultaApi.getToken();
+    String token = await SharedVar.getToken();
     print("token:" + token);
     if (token == "") {
     } else {
