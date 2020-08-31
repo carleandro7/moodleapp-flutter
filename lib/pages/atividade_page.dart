@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 
 import 'package:moodleapp/entitys/disciplina.dart';
-import 'package:moodleapp/pages/atividade_page.dart';
-import 'package:moodleapp/utils/consulta_api.dart';
-import 'package:moodleapp/utils/shared_var.dart';
-import 'package:moodleapp/utils/nav.dart';
+import 'package:moodleapp/entitys/modulo.dart';
 
-class DisciplinaPage extends StatefulWidget {
+class AtividadePage extends StatefulWidget {
   int id = -1;
-  String disciplinaNome;
-  DisciplinaPage();
-  DisciplinaPage.dados(this.id, this.disciplinaNome);
+  Disciplina disciplina;
+  AtividadePage();
+  AtividadePage.dados(this.id, this.disciplina);
   @override
-  _DisciplinaPageState createState() =>
-      _DisciplinaPageState(id, disciplinaNome);
+  _AtividadePageState createState() => _AtividadePageState(id, disciplina);
 }
 
-class _DisciplinaPageState extends State<DisciplinaPage> {
+class _AtividadePageState extends State<AtividadePage> {
   int id = -1;
-  String disciplinaNome;
-  List<Disciplina> listDados = List();
-  _DisciplinaPageState(this.id, this.disciplinaNome);
+  Disciplina disciplina;
+  List<Modulo> listDados = List();
+  _AtividadePageState(this.id, this.disciplina);
+
   @override
   void initState() {
     super.initState();
@@ -28,8 +25,7 @@ class _DisciplinaPageState extends State<DisciplinaPage> {
   }
 
   void _getAllCourses() async {
-    String token = await SharedVar.getToken();
-    List<Disciplina> list = await ConsultaApi.getDisciplina(token, id);
+    List<Modulo> list = this.disciplina.listModulo;
 
     setState(() {
       listDados = list;
@@ -38,10 +34,10 @@ class _DisciplinaPageState extends State<DisciplinaPage> {
 
   @override
   Widget build(BuildContext context) {
-    final DisciplinaPage args = ModalRoute.of(context).settings.arguments;
+    final AtividadePage args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-        title: Text(this.disciplinaNome),
+        title: Text(this.disciplina.name),
         backgroundColor: Colors.blue,
         centerTitle: true,
       ),
@@ -81,13 +77,15 @@ class _DisciplinaPageState extends State<DisciplinaPage> {
         ),
       ),
       onTap: () {
-        _showDisciplina(context, listDados[index].id, listDados[index]);
+        _showAtividade(context, listDados[index].id, listDados[index]);
       },
     );
   }
 
-  void _showDisciplina(BuildContext context, int index, Disciplina disciplina) {
+  void _showAtividade(BuildContext context, int index, Modulo modulo) {
     print(index);
-    pushAndRemoveUntil(context, AtividadePage.dados(index, disciplina));
+    if (modulo.modplural == "Arquivos") {
+      modulo.fileUrl;
+    } else if (modulo.modplural == "Questionários") {}
   }
 }
